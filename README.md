@@ -1,13 +1,9 @@
 # chibi lab. 公式サイト
 
-> **⚠ 現在は検証中のため、検索エンジンにインデックスされないよう設定しています**
-> （`robots.txt` で全ページのクロールを禁止し、`index.html` / `admin.html` に
-> `<meta name="robots" content="noindex, nofollow">` を追加済み）。
-> 本公開する際は、以下を実施してください。
-> 1. `robots.txt` の `Disallow: /` を削除する（またはファイル自体を削除）
-> 2. `index.html` の `<meta name="robots" ...>` 行を削除する
->    （`admin.html` の方はそのまま `noindex` を残すことを推奨します。
->    管理ページが検索結果に出る必要はないためです）
+> ✅ 本公開済みです。検索エンジンにインデックスされるよう設定を解除しています
+> （`index.html` は `robots.txt` ・ `noindex` とも解除済み。`admin.html` は
+> 管理ページのため引き続き `robots.txt` と `<meta name="robots" content="noindex, nofollow">`
+> の両方でクロール・インデックスをブロックしています）。
 
 東京理科大学 サイエンスコミュニケーションサークル chibi lab. の公式サイトです。
 2024年ごろまでFC2ホームページ（chibilab.web.fc2.com）で運用していたサイトを、
