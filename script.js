@@ -14,7 +14,7 @@ var SITE = {
   "aboutPoint1": "科学館・図書館でのサイエンスショー出展",
   "aboutPoint2": "工作イベント・ワークショップの企画運営",
   "aboutPoint3": "YouTube・SNSでの科学コンテンツ発信",
-  "contactBody": "実験教室・サイエンスショーのご依頼は、日時・場所・対象学年・人数などを明記のうえメールでご連絡ください（希望日の1〜2ヶ月前を目安にお願いします）。取材やその他のお問い合わせは、下記フォームからどうぞ。",
+  "contactBody": "実験教室・サイエンスショーのご依頼は、日時・場所・対象学年・人数などを明記のうえメールでご連絡ください（遅くとも希望日の1ヶ月前までにご連絡ください）。取材やその他のお問い合わせは、下記フォームからどうぞ。",
   "contactEmail": "chibi.lab.chibi@gmail.com",
   "contactFormUrl": "https://docs.google.com/forms/d/e/1FAIpQLSfsTu5M_ln2tvkn-N3_2mbyWaHF6K3KrXiTiSE6LW2xmBJP7Q/viewform",
   "snsX": "https://twitter.com/chibi_lab",
@@ -190,7 +190,12 @@ var SECTIONS = [];
 
 // ---- ページの並び順（ABOUT・お知らせ・イベント情報・ギャラリーの表示順） ----
 // この4つの並び順を入れ替えたいときは、配列の中身の順番を書き換えてください
-var SECTION_ORDER = ["about", "topics", "events", "gallery"];
+var SECTION_ORDER = [
+  "about",
+  "topics",
+  "events",
+  "gallery"
+];
 
 /* ============================================================
    ここから下は表示のしくみです。通常は触らなくて大丈夫です。
