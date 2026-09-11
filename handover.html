@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>chibi lab. 引き継ぎ書</title>
+<style>
+  :root {
+    --paper: #FFFBEA;
+    --paper-alt: #FFF6C4;
+    --card: #FFFFFF;
+    --ink: #4A2A12;
+    --ink-soft: #8A6A4A;
+    --teal: #AB511F;
+    --teal-dark: #7F3F00;
+    --amber: #D7862E;
+    --magenta: #FF0080;
+    --border: #E8D9A8;
+    --warn-bg: #FFF3CD;
+    --warn-border: #E0A800;
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1C140A;
+      --paper-alt: #241A0D;
+      --card: #2A1F12;
+      --ink: #F5E9D8;
+      --ink-soft: #C9A97E;
+      --teal: #E38A4C;
+      --teal-dark: #F3A970;
+      --amber: #E8A94F;
+      --magenta: #FF5CA8;
+      --border: #4A3A20;
+      --warn-bg: #3A2E10;
+      --warn-border: #8A6A1E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1C140A;
+    --paper-alt: #241A0D;
+    --card: #2A1F12;
+    --ink: #F5E9D8;
+    --ink-soft: #C9A97E;
+    --teal: #E38A4C;
+    --teal-dark: #F3A970;
+    --amber: #E8A94F;
+    --magenta: #FF5CA8;
+    --border: #4A3A20;
+    --warn-bg: #3A2E10;
+    --warn-border: #8A6A1E;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", -apple-system, sans-serif;
+    line-height: 1.8;
+  }
+
+  a { color: var(--teal-dark); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 760px);
+    justify-content: center;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 120px;
+  }
+  @media (max-width: 880px) {
+    .layout { grid-template-columns: 1fr; padding: 24px 16px 80px; }
+    nav.toc { display: none; }
+  }
+
+  nav.toc {
+    position: sticky;
+    top: 32px;
+    align-self: start;
+    font-size: 0.82rem;
+  }
+  nav.toc .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+    color: var(--ink-soft);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  nav.toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--border);
+  }
+  nav.toc li { margin: 0; }
+  nav.toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+  nav.toc a:hover { color: var(--ink); border-left-color: var(--teal); }
+
+  header.masthead {
+    padding-bottom: 28px;
+    margin-bottom: 8px;
+    border-bottom: 3px solid var(--ink);
+  }
+  header.masthead .kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--teal-dark);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  header.masthead h1 {
+    font-size: 2rem;
+    margin: 0 0 10px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  header.masthead p.lede {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    max-width: 46em;
+  }
+
+  .quicklinks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 28px 0 0;
+  }
+  @media (max-width: 520px) { .quicklinks { grid-template-columns: 1fr; } }
+  .quicklinks a {
+    display: block;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .quicklinks a:hover { border-color: var(--teal); }
+  .quicklinks .label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .quicklinks .url {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.86rem;
+    word-break: break-all;
+  }
+
+  section { margin-top: 56px; scroll-margin-top: 24px; }
+  section h2 {
+    font-size: 1.3rem;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-wrap: balance;
+  }
+  section h2 .num {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+  section > p.intro { color: var(--ink-soft); margin: 0 0 20px; max-width: 60ch; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--teal);
+    color: var(--paper);
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .steps { display: flex; flex-direction: column; gap: 14px; margin: 20px 0; }
+  .step {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 14px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .step .n {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--paper-alt);
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--teal-dark);
+  }
+  .step .body p { margin: 0; }
+  .step .body p + p { margin-top: 6px; }
+  .step .body strong { color: var(--ink); }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .feature {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .feature .step-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .feature h3 { font-size: 0.95rem; margin: 0 0 6px; }
+  .feature p { margin: 0; font-size: 0.86rem; color: var(--ink-soft); }
+
+  .callout {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin: 20px 0;
+    font-size: 0.92rem;
+  }
+  .callout.warn { background: var(--warn-bg); border: 2px solid var(--warn-border); }
+  .callout.info { background: var(--paper-alt); border: 1.5px solid var(--border); }
+  .callout p { margin: 0; }
+  .callout p + p { margin-top: 8px; }
+  .callout strong.head { display: block; margin-bottom: 6px; }
+
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
+    background: var(--paper-alt);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9rem;
+  }
+  table caption {
+    text-align: left;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { color: var(--ink-soft); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  tr:last-child td { border-bottom: none; }
+  .overflow { overflow-x: auto; border: 1.5px solid var(--border); border-radius: var(--radius); }
+  .overflow table { margin: 0; }
+  .overflow th, .overflow td { border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .overflow td.wrap { white-space: normal; }
+
+  ul.plain { margin: 8px 0; padding-left: 1.3em; }
+  ul.plain li { margin: 4px 0; }
+
+  footer.end {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1.5px solid var(--border);
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <nav class="toc" aria-label="目次">
+    <div class="eyebrow">目次</div>
+    <ol>
+      <li><a href="#urls">サイトのURL</a></li>
+      <li><a href="#daily">日常の更新</a></li>
+      <li><a href="#token">トークンの発行</a></li>
+      <li><a href="#invite">新しい人を招待</a></li>
+      <li><a href="#fc2">旧ホームページ（FC2）</a></li>
+      <li><a href="#search">検索エンジン登録</a></li>
+      <li><a href="#trouble">こまったときは</a></li>
+      <li><a href="#accounts">アカウント一覧</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="masthead">
+      <div class="kicker">HANDOVER GUIDE — 2026.09</div>
+      <h1>chibi lab. 公式サイト 引き継ぎ書</h1>
+      <p class="lede">
+        プログラミングの知識がなくても、このページの手順どおりに進めれば
+        サイトの更新・引き継ぎができます。まずは「サイトのURL」から
+        ざっと目を通してください。
+      </p>
+      <div class="quicklinks">
+        <a href="https://chibi-labhp.github.io/chibi.lab/" target="_blank" rel="noopener">
+          <span class="label">公開サイト</span>
+          <span class="url">chibi-labhp.github.io/chibi.lab</span>
+        </a>
+        <a href="https://chibi-labhp.github.io/chibi.lab/admin.html" target="_blank" rel="noopener">
+          <span class="label">編集ページ（管理用）</span>
+          <span class="url">…/chibi.lab/admin.html</span>
+        </a>
+      </div>
+    </header>
+
+    <section id="urls">
+      <h2><span class="num">§1</span> サイトのURL一覧</h2>
+      <p class="intro">まずはここだけブックマークしておけば迷いません。</p>
+      <div class="overflow">
+        <table>
+          <thead><tr><th>何か</th><th>URL / 場所</th></tr></thead>
+          <tbody>
+            <tr><td>公開サイト（一般の人が見るページ）</td><td class="wrap"><code>https://chibi-labhp.github.io/chibi.lab/</code></td></tr>
+            <tr><td>編集ページ（更新はここから）</td><td class="wrap"><code>https://chibi-labhp.github.io/chibi.lab/admin.html</code></td></tr>
+            <tr><td>ソースコード（GitHubリポジトリ）</td><td class="wrap"><code>github.com/chibi-labhp/chibi.lab</code></td></tr>
+            <tr><td>くわしい技術メモ（README）</td><td class="wrap">リポジトリ直下の <code>README.md</code></td></tr>
+            <tr><td>旧ホームページ（今は移転案内のみ表示、参照可）</td><td class="wrap"><code>https://chibilab.web.fc2.com/</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="daily">
+      <h2><span class="num">§2</span> 日常の更新：admin.html の使い方</h2>
+      <p class="intro">
+        お知らせ・イベント・写真を追加したいときは、コードを一切触らず
+        このページだけで完結します。
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <div class="body">
+            <p><strong>admin.html を開く</strong>（上のリンクから）</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div class="body">
+            <p><strong>「STEP 1」</strong>にリポジトリ名 <code>chibi-labhp/chibi.lab</code> と、
+            自分のアクセストークンを入力して「読み込む」を押す。</p>
+            <p>トークンをまだ持っていない場合は <a href="#token">§3 トークンの発行</a> を先に読んでください。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <div class="body">
+            <p>表示されたフォームで内容を編集する（下の一覧を参照）。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <div class="body">
+            <p>保存する前に <strong>「プレビュー」</strong>ボタンで、実際の見た目をその場で確認できる
+            （まだ公開されていないので、何度でもやり直せる）。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">5</div>
+          <div class="body">
+            <p>問題なければ <strong>「保存してサイトに反映」</strong>を押す。1〜2分後に公開サイトに反映される。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature">
+          <span class="step-badge">STEP 2</span>
+          <h3>サイト全体の文言</h3>
+          <p>キャッチコピー、ABOUT本文、お問い合わせ先、SNSリンクなど</p>
+        </div>
+        <div class="feature">
+          <span class="step-badge">STEP 3</span>
+          <h3>ページの並び順</h3>
+          <p>ABOUT・お知らせ・イベント・ギャラリー・追加セクションの表示順をドラッグで変更。固定ブロックは非表示にもできる</p>
+        </div>
+        <div class="feature">
+          <span class="step-badge">STEP 4</span>
+          <h3>お知らせ</h3>
+          <p>日付・タイトル・本文・画像（任意）を追加</p>
+        </div>
+        <div class="feature">
+          <span class="step-badge">STEP 5</span>
+          <h3>イベント情報</h3>
+          <p>日時・場所・タイトル・説明文</p>
+        </div>
+        <div class="feature">
+          <span class="step-badge">STEP 6</span>
+          <h3>ギャラリー</h3>
+          <p>写真キャプションと画像</p>
+        </div>
+        <div class="feature">
+          <span class="step-badge">STEP 7</span>
+          <h3>新しいセクション</h3>
+          <p>工作紹介・リンク集など、独立したコーナーを自由に追加</p>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <strong class="head">画像の追加はボタン1つ</strong>
+        <p>
+          各画像欄の <strong>「画像を選ぶ」</strong>ボタンから端末内の写真を直接選ぶだけでアップロードでき、
+          ファイル名が自動で入力されます。あらかじめGitHub側にファイルを置いておく必要はありません。
+        </p>
+      </div>
+
+      <div class="callout info">
+        <strong class="head">操作ミスをしても大丈夫</strong>
+        <p><strong>「↶ 元に戻す」</strong>で1つ前の状態に戻せます（何度でも）。</p>
+        <p><strong>「読み込み時点に復元」</strong>で、GitHubから読み込んだ直後の状態にまとめて戻せます。</p>
+        <p>保存し忘れたままタブを閉じても、編集内容は数秒おきに自動でブラウザに保存されているので、
+        次に同じリポジトリを読み込むと「復元しますか？」と聞かれます。</p>
+      </div>
+    </section>
+
+    <section id="token">
+      <h2><span class="num">§3</span> はじめての人：GitHubトークンの発行</h2>
+      <p class="intro">
+        admin.html を使うには、まず自分専用の「アクセストークン」が必要です。
+        パスワードのようなものだと考えてください。
+      </p>
+
+      <div class="callout warn">
+        <strong class="head">その前に：GitHubアカウントと組織への招待が必要です</strong>
+        <p>
+          このサイトは <code>chibi-labhp</code> というGitHub組織（チームのようなもの）が管理しています。
+          トークンを発行するには、まず自分のGitHubアカウントがこの組織のメンバーとして
+          招待されている必要があります。まだの場合は <a href="#invite">§4 新しい人を招待</a> を
+          現在の管理者に見てもらってください。
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <div class="body"><p>GitHubにログインし、右上のアイコン →<strong>Settings</strong></p></div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div class="body"><p>左メニュー一番下の <strong>Developer settings</strong></p></div>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <div class="body"><p><strong>Personal access tokens → Fine-grained tokens → Generate new token</strong></p></div>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <div class="body">
+            <p>設定項目：</p>
+            <ul class="plain">
+              <li><strong>Resource owner</strong>：<code>chibi-labhp</code>（組織）を選ぶ</li>
+              <li><strong>Repository access</strong>：「Only select repositories」→ <code>chibi.lab</code> にチェック</li>
+              <li><strong>Permissions → Repository permissions → Contents</strong>を「Read and write」に変更</li>
+              <li>有効期限（Expiration）は90日など短めにしておくと安全</li>
+            </ul>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">5</div>
+          <div class="body">
+            <p><strong>Generate token</strong>を押すと <code>github_pat_...</code> のトークンが表示される。
+            その場でコピーして admin.html に貼り付ける。</p>
+            <p><strong>この画面を閉じると二度と表示されないので注意。</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong class="head">組織の承認待ちになることがあります</strong>
+        <p>
+          発行してもすぐ使えず「組織の承認待ち」と表示される場合があります。その場合は組織のOwnerが
+          <code>github.com/organizations/chibi-labhp/settings/personal-access-tokens</code>
+          から承認してください。
+        </p>
+      </div>
+    </section>
+
+    <section id="invite">
+      <h2><span class="num">§4</span> 新しい人に権限を渡すには</h2>
+      <p class="intro">後任や新しい部員にサイト更新をお願いするときの手順です（現在の管理者が行います）。</p>
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <div class="body"><p>新しい人にGitHubアカウントを作ってもらう（無料）</p></div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div class="body">
+            <p><code>github.com/orgs/chibi-labhp/people</code> を開き、
+            <strong>Invite member</strong> からそのユーザー名を招待する</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <div class="body"><p>相手が招待を承諾すれば、組織メンバーとして <a href="#token">§3 トークンの発行</a> ができるようになる</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="fc2">
+      <h2><span class="num">§5</span> 旧ホームページ（FC2）について</h2>
+      <p class="intro">
+        2024年ごろまで使っていたFC2ホームページは、削除せずそのまま残しています。
+      </p>
+      <ul class="plain">
+        <li>全ページ（HOME・ABOUT・LINK・GALLERY・QUIZ など18ページ）に、新サイトへの移転案内を追加済み</li>
+        <li>「チビラボ」で検索したときに今もこのFC2サイトが上位に出るため、そこから新サイトへ誘導する役割がある</li>
+        <li>今後、新サイトが検索で上位に来るようになれば、FC2サイトは停止・削除しても構わない
+          （その場合は <a href="#trouble">§7</a> にある管理会社に相談するか、ログインして非公開設定にする）</li>
+      </ul>
+      <div class="callout info">
+        <strong class="head">FC2の管理画面にログインする場合</strong>
+        <p><code>secure.id.fc2.com</code> からログイン → 「FC2ホームページ」の管理画面へ。
+        ログイン情報は <a href="#accounts">§8 アカウント一覧</a> を参照。</p>
+      </div>
+    </section>
+
+    <section id="search">
+      <h2><span class="num">§6</span> 検索エンジン登録（Google Search Console）</h2>
+      <p class="intro">「チビラボ」で検索されたときに新サイトが出てくるようにするための設定です。</p>
+      <ul class="plain">
+        <li><code>search.google.com/search-console</code> で新サイトの所有権を確認済み</li>
+        <li>新しいページを追加したら、Search Consoleの「URL検査」→ 該当URLを検査 →
+          「インデックス登録をリクエスト」を押すと、Googleに早めに気づいてもらえる</li>
+        <li><code>site:chibi-labhp.github.io</code> で検索すると、今どのページが登録されているか確認できる</li>
+      </ul>
+    </section>
+
+    <section id="trouble">
+      <h2><span class="num">§7</span> こまったときは</h2>
+      <ul class="plain">
+        <li><strong>もっと詳しい技術情報が知りたい</strong>：リポジトリ直下の <code>README.md</code> に、
+          コードを直接編集する方法やファイル構成の説明があります</li>
+        <li><strong>保存したのにサイトが変わらない</strong>：反映まで1〜2分かかります。それでも変わらない場合は
+          GitHubリポジトリの <strong>Actions</strong> タブでエラーが出ていないか確認してください</li>
+        <li><strong>トークンでエラーが出る</strong>：期限切れか、組織の承認待ちの可能性があります。
+          <a href="#token">§3</a> を参照</li>
+        <li><strong>それでも解決しない</strong>：この引き継ぎ書を作った時点の管理者
+          （<span class="mono">youshengyinolai-tech</span>）に連絡してください</li>
+      </ul>
+    </section>
+
+    <section id="accounts">
+      <h2><span class="num">§8</span> アカウント一覧</h2>
+      <div class="callout warn">
+        <strong class="head">パスワードはこの書類には書いていません</strong>
+        <p>実際のログインID・パスワードは、現在の管理者から個別に（口頭やパスワード管理アプリ経由で）
+        受け取ってください。この引き継ぎ書自体は誰かに転送される可能性があるため、
+        認証情報そのものは載せない方針にしています。</p>
+      </div>
+      <div class="overflow">
+        <table>
+          <thead><tr><th>サービス</th><th>アカウント（ID）</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>GitHub組織</td>
+              <td class="wrap"><code>chibi-labhp</code></td>
+              <td class="wrap">Owner: <span class="mono">youshengyinolai-tech</span>。新しい人は§4の手順で招待</td>
+            </tr>
+            <tr>
+              <td>admin.html用トークン</td>
+              <td class="wrap">各自で発行</td>
+              <td class="wrap">§3参照。共有せず、1人1つ発行するのが安全</td>
+            </tr>
+            <tr>
+              <td>FC2（旧ホームページ）</td>
+              <td class="wrap">サークル共用のGmailアドレス</td>
+              <td class="wrap">ID・パスワードは管理者に確認</td>
+            </tr>
+            <tr>
+              <td>お問い合わせ用Gmail</td>
+              <td class="wrap">サークル共用のGmailアドレス</td>
+              <td class="wrap">サイトのCONTACT欄に表示している連絡先と同じアカウント</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="end">
+      作成: 2026年9月11日。サイトの仕組みそのものについては <code>README.md</code> も参照してください。
+    </footer>
+  </main>
+</div>
+</body>
+</html>
