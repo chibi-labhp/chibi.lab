@@ -174,7 +174,11 @@
     align-items: baseline;
     gap: 10px;
     text-wrap: balance;
+    break-after: avoid;
+    page-break-after: avoid;
   }
+  section > p.intro { break-after: avoid; page-break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
   section h2 .num {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 0.85rem;
@@ -205,6 +209,8 @@
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
     padding: 16px 18px;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
   .step .n {
     width: 34px; height: 34px;
@@ -231,6 +237,8 @@
     border: 1.5px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
   .feature .step-badge {
     display: inline-block;
@@ -247,6 +255,8 @@
     padding: 16px 18px;
     margin: 20px 0;
     font-size: 0.92rem;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
   .callout.warn { background: var(--warn-bg); border: 2px solid var(--warn-border); }
   .callout.info { background: var(--paper-alt); border: 1.5px solid var(--border); }
@@ -283,7 +293,8 @@
   }
   th { color: var(--ink-soft); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
   tr:last-child td { border-bottom: none; }
-  .overflow { overflow-x: auto; border: 1.5px solid var(--border); border-radius: var(--radius); }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  .overflow { overflow-x: auto; border: 1.5px solid var(--border); border-radius: var(--radius); break-inside: avoid; page-break-inside: avoid; }
   .overflow table { margin: 0; }
   .overflow th, .overflow td { border-bottom: 1px solid var(--border); white-space: nowrap; }
   .overflow td.wrap { white-space: normal; }
