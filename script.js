@@ -181,6 +181,12 @@ var GALLERY = [
     "color": "#FF0080",
     "caption": "西新宿小学校実験教室（2014年10月）で空気砲の的当てに夢中になる児童",
     "tilt": 2
+  },
+  {
+    "image": "images/1789809235764-chibilab_20260825.jpg",
+    "color": "#AB511F",
+    "caption": "NICTこどもサイエンスラボ(2026年8月)での実験の様子",
+    "tilt": 0
   }
 ];
 
