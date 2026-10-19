@@ -99,13 +99,6 @@ var GALLERY = [
     "tilt": 0
   },
   {
-    "date": "2016.03.01",
-    "image": "images/chibilab-miraiken-2016-03-dryice.jpg",
-    "color": "#AB511F",
-    "caption": "みらい研究室（2016年3月・堀切地区センター）のドライアイス実験ショー",
-    "tilt": -2
-  },
-  {
     "date": "2016.11.01",
     "image": "images/chibilab-ridaisai-2016-11-purplecabbage.jpg",
     "color": "#D7862E",
@@ -148,11 +141,11 @@ var GALLERY = [
     "tilt": -2
   },
   {
-    "date": "2015.02.01",
-    "image": "images/chibilab-fuyugasshuku-2015-02-fujisan.jpg",
-    "color": "#D7862E",
-    "caption": "冬合宿（2015年2月・山梨）で見た雄大な富士山",
-    "tilt": 1
+    "date": "2016.03.01",
+    "image": "images/chibilab-miraiken-2016-03-dryice.jpg",
+    "color": "#AB511F",
+    "caption": "みらい研究室（2016年3月・堀切地区センター）のドライアイス実験ショー",
+    "tilt": -2
   },
   {
     "date": "2015.11.01",
@@ -197,17 +190,10 @@ var GALLERY = [
     "tilt": 2.5
   },
   {
-    "date": "2014.03.01",
-    "image": "images/chibilab-sciencelink-2014-03-award.jpg",
-    "color": "#FF0080",
-    "caption": "サイエンスリンク（2014年3月）でお客様賞を受賞したときの様子",
-    "tilt": -2
-  },
-  {
-    "date": "2014.06.01",
-    "image": "images/chibilab-miraiken-2014-06-miraikan.jpg",
-    "color": "#AB511F",
-    "caption": "日本科学未来館で開催された「みらい研究室」（2014年6月）でのブース出展",
+    "date": "2015.02.01",
+    "image": "images/chibilab-fuyugasshuku-2015-02-fujisan.jpg",
+    "color": "#D7862E",
+    "caption": "冬合宿（2015年2月・山梨）で見た雄大な富士山",
     "tilt": 1
   },
   {
@@ -223,6 +209,20 @@ var GALLERY = [
     "color": "#FF0080",
     "caption": "西新宿小学校実験教室（2014年10月）で空気砲の的当てに夢中になる児童",
     "tilt": 2
+  },
+  {
+    "date": "2014.06.01",
+    "image": "images/chibilab-miraiken-2014-06-miraikan.jpg",
+    "color": "#AB511F",
+    "caption": "日本科学未来館で開催された「みらい研究室」（2014年6月）でのブース出展",
+    "tilt": 1
+  },
+  {
+    "date": "2014.03.01",
+    "image": "images/chibilab-sciencelink-2014-03-award.jpg",
+    "color": "#FF0080",
+    "caption": "サイエンスリンク（2014年3月）でお客様賞を受賞したときの様子",
+    "tilt": -2
   }
 ];
 
