@@ -22,7 +22,7 @@ var SITE = {
   "snsYoutube": "https://www.youtube.com/channel/UCPiOUgdJ0pQmk5F_H9Do_Ig"
 };
 
-// ---- お知らせ（新しいものを配列の先頭に追加してください。image は省略可） ----
+// ---- お知らせ（サイトでは date の新しい順に自動で並びます。image は省略可） ----
 var TOPICS = [
   {
     "date": "2026.08.13",
@@ -31,7 +31,14 @@ var TOPICS = [
   }
 ];
 
-// ---- イベント情報（新しいものを配列の先頭に追加してください） ----
+// ---- 活動予定（これから参加・開催するイベントの告知） ----
+// サイトでは日付の近い順に自動で並びます。
+// date は "2026.11.03" や "2026.11.03–04" の形で書くと、その日を過ぎた予定は
+// 自動でサイトに表示されなくなります（消し忘れても大丈夫）。
+// time / place / link は省略可。link には申込ページなどのURLを入れてください。
+var UPCOMING = [];
+
+// ---- イベント情報（サイトでは date の新しい順に自動で並びます） ----
 var EVENTS = [
   {
     "date": "2024.03.02",
@@ -71,134 +78,156 @@ var EVENTS = [
   }
 ];
 
-// ---- ギャラリー写真（本番では画像ファイルに差し替えてください） ----
+// ---- ギャラリー写真（サイトでは date の新しい順に自動で並びます） ----
+// date: 撮影日（例 "2026.08.25"。サイトには表示されず、並び順にだけ使います）
 // image: 画像パス（例 "images/event01.jpg"）。空のままなら色付きプレースホルダーが表示されます。
 var GALLERY = [
   {
+    "date": "2026.08.01",
+    "image": "images/1789809235764-chibilab_20260825.jpg",
+    "color": "#AB511F",
+    "caption": "NICTこどもサイエンスラボ(2026年8月)での実験の様子",
+    "tilt": 0
+  },
+  {
+    "date": "2016.03.01",
     "image": "images/chibilab-miraiken-2016-03-dryice.jpg",
     "color": "#AB511F",
     "caption": "みらい研究室（2016年3月・堀切地区センター）のドライアイス実験ショー",
     "tilt": -2
   },
   {
+    "date": "2016.11.01",
     "image": "images/chibilab-ridaisai-2016-11-purplecabbage.jpg",
     "color": "#D7862E",
     "caption": "理大祭（2016年11月）の紫キャベツ液を使ったお絵描き実験",
     "tilt": 1.5
   },
   {
+    "date": "2016.10.01",
     "image": "images/chibilab-birthday-2016-10-cake.jpg",
     "color": "#FF0080",
     "caption": "chibi lab. 4周年生誕祭（2016年10月）のお祝いケーキ",
     "tilt": -1
   },
   {
+    "date": "2016.08.01",
     "image": "images/chibilab-natsugasshuku-2016-08-farm.jpg",
     "color": "#AB511F",
     "caption": "夏合宿（2016年8月・栃木県那須町）で訪れた南ヶ丘牧場",
     "tilt": 2
   },
   {
+    "date": "2016.08.01",
     "image": "images/chibilab-sciencelink-2016-08-award.jpg",
     "color": "#D7862E",
     "caption": "サイエンスリンク（2016年8月・日本科学未来館）でお客様賞を受賞した全員集合写真",
     "tilt": -1.5
   },
   {
+    "date": "2016.06.01",
     "image": "images/chibilab-miraiken-2016-06-booth.jpg",
     "color": "#FF0080",
     "caption": "みらい研究室（2016年6月・日本科学未来館）のちびらぼブース",
     "tilt": 2.5
   },
   {
+    "date": "2016.05.01",
     "image": "images/chibilab-shinkan-bbq-2016-05.jpg",
     "color": "#AB511F",
     "caption": "新歓BBQ（2016年5月・二子新地）の新メンバー集合写真",
     "tilt": -2
   },
   {
+    "date": "2015.02.01",
     "image": "images/chibilab-fuyugasshuku-2015-02-fujisan.jpg",
     "color": "#D7862E",
     "caption": "冬合宿（2015年2月・山梨）で見た雄大な富士山",
     "tilt": 1
   },
   {
+    "date": "2015.11.01",
     "image": "images/chibilab-ridaisai-2015-11-group.jpg",
     "color": "#FF0080",
     "caption": "理大祭（2015年11月）2日間の展示を終えての集合写真",
     "tilt": -2.5
   },
   {
+    "date": "2015.10.01",
     "image": "images/chibilab-birthday-2015-10-cake.jpg",
     "color": "#AB511F",
     "caption": "chibi lab. 3周年を祝う誕生日ケーキ（2015年10月）",
     "tilt": 1.5
   },
   {
+    "date": "2015.08.01",
     "image": "images/chibilab-natsugasshuku-2015-08-bbq.jpg",
     "color": "#D7862E",
     "caption": "夏合宿（2015年8月・新潟）2日目のバーベキュー",
     "tilt": -1
   },
   {
+    "date": "2015.08.01",
     "image": "images/chibilab-sciencelink-2015-08-award.jpg",
     "color": "#FF0080",
     "caption": "サイエンスリンク（2015年8月）でお客様賞を受賞した瞬間",
     "tilt": 2
   },
   {
+    "date": "2015.06.01",
     "image": "images/chibilab-miraiken-2015-06-booth.jpg",
     "color": "#AB511F",
     "caption": "みらい研究室（2015年6月・日本科学未来館）の実験ブースが大盛況",
     "tilt": -1.5
   },
   {
+    "date": "2015.05.01",
     "image": "images/chibilab-ichigaya-es-2015-05-benham.jpg",
     "color": "#D7862E",
     "caption": "市ヶ谷小学校サイエンスフェスタ（2015年5月）でベンハムのこま工作",
     "tilt": 2.5
   },
   {
+    "date": "2014.03.01",
     "image": "images/chibilab-sciencelink-2014-03-award.jpg",
     "color": "#FF0080",
     "caption": "サイエンスリンク（2014年3月）でお客様賞を受賞したときの様子",
     "tilt": -2
   },
   {
+    "date": "2014.06.01",
     "image": "images/chibilab-miraiken-2014-06-miraikan.jpg",
     "color": "#AB511F",
     "caption": "日本科学未来館で開催された「みらい研究室」（2014年6月）でのブース出展",
     "tilt": 1
   },
   {
+    "date": "2014.11.01",
     "image": "images/chibilab-ridaisai-2014-11-spectroscope.jpg",
     "color": "#D7862E",
     "caption": "理大祭（2014年11月）の分光器づくりで虹を観察する子どもたち",
     "tilt": -1.5
   },
   {
+    "date": "2014.10.01",
     "image": "images/chibilab-nishishinjuku-es-2014-10-airgun.jpg",
     "color": "#FF0080",
     "caption": "西新宿小学校実験教室（2014年10月）で空気砲の的当てに夢中になる児童",
     "tilt": 2
-  },
-  {
-    "image": "images/1789809235764-chibilab_20260825.jpg",
-    "color": "#AB511F",
-    "caption": "NICTこどもサイエンスラボ(2026年8月)での実験の様子",
-    "tilt": 0
   }
 ];
 
 // ---- 追加セクション（GALLERYとCONTACTの間に自由に増やせます） ----
 // 各セクションの items は { title, body, image, link } のカード一覧です（image/linkは省略可）
+// bg は背景色で "cream"（クリーム色）か "yellow"（黄色）
 var SECTIONS = [];
 
-// ---- ページの並び順（ABOUT・お知らせ・イベント情報・ギャラリーの表示順） ----
-// この4つの並び順を入れ替えたいときは、配列の中身の順番を書き換えてください
+// ---- ページの並び順（ABOUT・お知らせ・活動予定・イベント情報・ギャラリーの表示順） ----
+// これらの並び順を入れ替えたいときは、配列の中身の順番を書き換えてください
 var SECTION_ORDER = [
   "about",
   "topics",
+  "schedule",
   "events",
   "gallery"
 ];
@@ -229,9 +258,34 @@ function renderSite() {
   document.getElementById("sns-youtube").href = SITE.snsYoutube;
 }
 
+// 日付欄の書き出し（"2026.11.03" や "2023.11.24–25" の初日）を数値にする。
+// 読み取れない書き方（"日程調整中" など）のときは null
+function dateStartValue(dateText) {
+  const m = String(dateText || "").match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
+  if (!m) return null;
+  return Number(m[1]) * 10000 + Number(m[2]) * 100 + Number(m[3]);
+}
+
+// 日付順に並べた新しい配列を返す（元の配列はそのまま）。newestFirst が true なら
+// 新しい日付が上、false なら古い（近い）日付が上。日付が読み取れないものは
+// 常に一番上に置き、同じ日付どうしは元の並び順を保つ
+function sortByDate(list, newestFirst) {
+  return list
+    .map((item, i) => ({ item, i, v: dateStartValue(item.date) }))
+    .sort((a, b) => {
+      if (a.v === null || b.v === null) {
+        if (a.v === b.v) return a.i - b.i;
+        return a.v === null ? -1 : 1;
+      }
+      if (a.v !== b.v) return newestFirst ? b.v - a.v : a.v - b.v;
+      return a.i - b.i;
+    })
+    .map(x => x.item);
+}
+
 function renderTopics() {
   const list = document.getElementById("topics-list");
-  list.innerHTML = TOPICS.map(t => `
+  list.innerHTML = sortByDate(TOPICS, true).map(t => `
     <article class="event-entry">
       <div class="event-date">${t.date}</div>
       <div class="event-body">
@@ -245,7 +299,7 @@ function renderTopics() {
 
 function renderEvents() {
   const list = document.getElementById("events-list");
-  list.innerHTML = EVENTS.map(ev => `
+  list.innerHTML = sortByDate(EVENTS, true).map(ev => `
     <article class="event-entry">
       <div class="event-date">${ev.date}</div>
       <div class="event-body">
@@ -257,9 +311,50 @@ function renderEvents() {
   `).join("");
 }
 
+// "2026.11.03" や "2026.11.03–04"（期間）の最終日を Date にする。
+// 読み取れない書き方のときは null（＝日付で自動非表示にしない）
+function scheduleEndDate(dateText) {
+  const m = String(dateText || "").match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})(?:\s*[–—~〜-]\s*(?:(\d{4})[.\/-])?(?:(\d{1,2})[.\/-])?(\d{1,2}))?/);
+  if (!m) return null;
+  const year = Number(m[4] || m[1]);
+  const month = Number(m[5] || m[2]);
+  const day = Number(m[6] || m[3]);
+  return new Date(year, month - 1, day, 23, 59, 59);
+}
+
+function renderSchedule() {
+  const list = document.getElementById("schedule-list");
+  if (!list) return;
+  const now = new Date();
+  const upcoming = sortByDate(UPCOMING, false).filter(ev => {
+    const end = scheduleEndDate(ev.date);
+    return !end || end >= now;
+  });
+
+  if (!upcoming.length) {
+    list.innerHTML = `<p class="schedule-empty">現在お知らせできる活動予定はありません。決まり次第こちらでお知らせします。</p>`;
+    return;
+  }
+
+  list.innerHTML = upcoming.map(ev => `
+    <article class="event-entry schedule-entry">
+      <div class="event-date">
+        ${ev.date || "日程未定"}
+        ${ev.time ? `<span class="schedule-time">${ev.time}</span>` : ""}
+      </div>
+      <div class="event-body">
+        <h3>${ev.title}</h3>
+        ${ev.body ? `<p>${ev.body}</p>` : ""}
+        ${ev.place ? `<span class="event-location">${ev.place}</span>` : ""}
+        ${ev.link ? `<a class="item-link schedule-link" href="${ev.link}" target="_blank" rel="noopener">詳細・お申し込み →</a>` : ""}
+      </div>
+    </article>
+  `).join("");
+}
+
 function renderGallery() {
   const grid = document.getElementById("gallery-grid");
-  grid.innerHTML = GALLERY.map(g => `
+  grid.innerHTML = sortByDate(GALLERY, true).map(g => `
     <div class="photo-card" style="--tilt:${g.tilt || 0}deg">
       ${
         g.image
@@ -287,6 +382,7 @@ function applySectionOrder() {
   const labels = {
     about: { name: "ABOUT", tagClass: "tag-teal" },
     topics: { name: "TOPICS", tagClass: "tag-magenta" },
+    schedule: { name: "SCHEDULE", tagClass: "tag-teal" },
     events: { name: "EVENTS", tagClass: "tag-amber" },
     gallery: { name: "GALLERY", tagClass: "tag-magenta" },
   };
@@ -363,6 +459,14 @@ function applySectionOrder() {
 // タグの番号（01/02...）はapplySectionOrder()がSECTION_ORDERを見て決める
 // （固定ブロックと通し番号で振り直すため）。この関数は必ずapplySectionOrder()
 // より先に呼ぶこと。
+// 追加セクションの背景色。bg が "yellow" なら黄色、"cream" ならクリーム色。
+// bg を指定していない古いデータは、これまでどおり交互（1つ目が黄色）にする
+function sectionIsYellow(s, i) {
+  if (s.bg === "yellow") return true;
+  if (s.bg === "cream") return false;
+  return i % 2 === 0;
+}
+
 function renderSections() {
   const container = document.getElementById("custom-sections");
   const contactLink = document.querySelector('.site-nav a[href="#contact"]');
@@ -384,7 +488,7 @@ function renderSections() {
   });
 
   container.innerHTML = SECTIONS.map((s, i) => `
-    <section id="${s.id}" data-custom-section class="section ${i % 2 === 0 ? "section-alt" : ""}">
+    <section id="${s.id}" data-custom-section class="section ${sectionIsYellow(s, i) ? "section-alt" : ""}">
       <div class="section-head">
         <span class="tag" id="${s.id}-tag"></span>
         <h2>${s.title}</h2>
@@ -427,6 +531,7 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 renderSite();
 renderTopics();
+renderSchedule();
 renderEvents();
 renderGallery();
 renderSections();

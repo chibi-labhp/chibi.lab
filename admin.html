@@ -89,7 +89,7 @@ label {
 }
 label:first-of-type { margin-top: 0; }
 
-input[type=text], input[type=password], textarea {
+input[type=text], input[type=password], input[type=date], textarea {
   width: 100%;
   padding: 10px 12px;
   border: 1.5px solid var(--border);
@@ -160,6 +160,36 @@ input:focus, textarea:focus {
   margin-top: 4px;
 }
 .add-btn:hover { border-color: var(--teal); color: var(--teal-dark); }
+/* 「＋追加」は一覧の上に置き、新しいカードはそのすぐ下（一覧の先頭）に入る */
+.add-btn + div, .add-btn + .items-editor { margin-top: 12px; }
+
+/* 追加した直後のカードを少しの間目立たせる */
+.bg-choice { display: flex; gap: 10px; flex-wrap: wrap; }
+.bg-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.bg-option:has(input:checked) { border-color: var(--ink); font-weight: 700; }
+.bg-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-soft);
+}
+.just-added { animation: just-added 1.6s ease-out; }
+@keyframes just-added {
+  0%, 30% { border-color: var(--magenta); box-shadow: 0 0 0 3px rgba(255,0,128,0.18); }
+  100% { box-shadow: none; }
+}
 
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -306,7 +336,7 @@ details summary {
 <body>
 <div class="wrap">
   <h1>chibi lab. 編集ページ</h1>
-  <p class="sub">サイトの文言・ページの並び順・お知らせ・イベント情報・ギャラリーをここで編集して、そのまま公開サイトに反映できます。</p>
+  <p class="sub">サイトの文言・ページの並び順・お知らせ・活動予定・イベント情報・ギャラリーをここで編集して、そのまま公開サイトに反映できます。</p>
 
   <!-- 接続設定 -->
   <div class="panel">
@@ -381,7 +411,7 @@ details summary {
   <div class="panel" id="orderPanel" style="display:none;">
     <h2><span class="badge" style="background:var(--magenta);">STEP 3</span> ページの並び順</h2>
     <p class="setup-note">
-      ABOUT・お知らせ・イベント情報・ギャラリー・STEP7で作った追加セクションの
+      ABOUT・お知らせ・活動予定・イベント情報・ギャラリー・STEP7で作った追加セクションの
       表示順を、ドラッグで自由に入れ替えられます（並び順はナビゲーションにも
       反映されます）。追加セクションをABOUTより上に持ってくることもできます。
       固定ブロックの「非表示にする」を押すと、そのブロックごとサイトから消せます
@@ -394,22 +424,39 @@ details summary {
   <!-- お知らせ編集 -->
   <div class="panel" id="topicsPanel" style="display:none;">
     <h2><span class="badge" style="background:var(--amber);color:var(--ink);">STEP 4</span> お知らせ</h2>
-    <div id="topicsList"></div>
+    <p class="setup-note">サイトでも、この一覧でも、日付の新しいものが自動で上に並びます。</p>
     <button class="add-btn" id="addTopicBtn">＋ お知らせを追加</button>
+    <div id="topicsList"></div>
+  </div>
+
+  <!-- 活動予定編集 -->
+  <div class="panel" id="schedulePanel" style="display:none;">
+    <h2><span class="badge" style="background:var(--amber);color:var(--ink);">STEP 4-2</span> 活動予定</h2>
+    <p class="setup-note">
+      これから参加・開催するイベントの告知です（サイトの「SCHEDULE / 活動予定」に表示）。
+      日付の近いものから順に自動で並びます。
+      日付はカレンダーから選びます。終了日（最終日）を過ぎた予定は
+      サイトに自動で表示されなくなります。終わった活動は「STEP 5 イベント情報」に
+      活動記録として追加してください。
+    </p>
+    <button class="add-btn" id="addScheduleBtn">＋ 活動予定を追加</button>
+    <div id="scheduleList"></div>
   </div>
 
   <!-- イベント編集 -->
   <div class="panel" id="eventsPanel" style="display:none;">
     <h2><span class="badge" style="background:var(--magenta);">STEP 5</span> イベント情報</h2>
-    <div id="eventsList"></div>
+    <p class="setup-note">サイトでも、この一覧でも、日付の新しいものが自動で上に並びます。</p>
     <button class="add-btn" id="addEventBtn">＋ イベントを追加</button>
+    <div id="eventsList"></div>
   </div>
 
   <!-- ギャラリー編集 -->
   <div class="panel" id="galleryPanel" style="display:none;">
     <h2><span class="badge">STEP 6</span> ギャラリー</h2>
-    <div id="galleryList"></div>
+    <p class="setup-note">サイトでも、この一覧でも、撮影日の新しい写真が自動で上に並びます。</p>
     <button class="add-btn" id="addPhotoBtn">＋ 写真を追加</button>
+    <div id="galleryList"></div>
   </div>
 
   <!-- 追加セクション編集 -->
@@ -444,6 +491,6 @@ details summary {
   <iframe id="previewFrame" class="preview-frame" title="プレビュー"></iframe>
 </div>
 
-<script src="admin.js"></script>
+<script src="admin.js?v=20261019"></script>
 </body>
 </html>

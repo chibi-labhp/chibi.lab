@@ -17,12 +17,13 @@ const SITE_FIELDS = [
 const ORDER_LABELS = {
   about: "ABOUT（わたしたちについて）",
   topics: "TOPICS（お知らせ）",
+  schedule: "SCHEDULE（活動予定）",
   events: "EVENTS（活動記録）",
   gallery: "GALLERY（活動フォト）",
 };
 const ALL_ORDER_KEYS = Object.keys(ORDER_LABELS);
 
-const state = { repo: "", token: "", sha: "", site: {}, topics: [], events: [], gallery: [], sections: [], sectionOrder: ["about", "topics", "events", "gallery"], nextSectionKey: 1 };
+const state = { repo: "", token: "", sha: "", site: {}, topics: [], schedule: [], events: [], gallery: [], sections: [], sectionOrder: ["about", "topics", "schedule", "events", "gallery"], nextSectionKey: 1 };
 
 const el = id => document.getElementById(id);
 
@@ -86,9 +87,27 @@ try {
 } catch (e) { /* localStorageが使えない環境では何もしない */ }
 
 el("connectBtn").addEventListener("click", loadFromGitHub);
-el("addTopicBtn").addEventListener("click", () => { pushHistory(); state.topics.unshift(blankTopic()); renderTopics(); });
-el("addEventBtn").addEventListener("click", () => { pushHistory(); state.events.unshift(blankEvent()); renderEvents(); });
-el("addPhotoBtn").addEventListener("click", () => { pushHistory(); state.gallery.push(blankPhoto()); renderGallery(); });
+// 「＋追加」は一覧の上にあり、新しいカードは一覧の先頭に入る。追加直後は
+// そのカードの最初の入力欄にカーソルを置き、少しの間色を付けて目印にする
+function focusNewCard(card) {
+  if (!card) return;
+  card.classList.add("just-added");
+  setTimeout(() => card.classList.remove("just-added"), 1700);
+  const first = card.querySelector("input:not([type=file]):not([disabled]), textarea");
+  if (first) first.focus({ preventScroll: true });
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function addToTop(list, blank, rerender, listId) {
+  pushHistory();
+  list.unshift(blank());
+  rerender();
+  focusNewCard(el(listId).querySelector("[data-idx]"));
+}
+
+el("addTopicBtn").addEventListener("click", () => addToTop(state.topics, blankTopic, renderTopics, "topicsList"));
+el("addScheduleBtn").addEventListener("click", () => addToTop(state.schedule, blankSchedule, renderSchedule, "scheduleList"));
+el("addEventBtn").addEventListener("click", () => addToTop(state.events, blankEvent, renderEvents, "eventsList"));
+el("addPhotoBtn").addEventListener("click", () => addToTop(state.gallery, blankPhoto, renderGallery, "galleryList"));
 el("addSectionBtn").addEventListener("click", () => {
   pushHistory();
   const sec = blankSection();
@@ -121,6 +140,7 @@ function snapshotState() {
   return JSON.stringify({
     site: state.site,
     topics: state.topics,
+    schedule: state.schedule,
     events: state.events,
     gallery: state.gallery,
     sections: state.sections,
@@ -244,6 +264,7 @@ function renderAll() {
   renderSite();
   renderOrder();
   renderTopics();
+  renderSchedule();
   renderEvents();
   renderGallery();
   renderSections();
@@ -440,7 +461,10 @@ function prepareSlideAnimation(container, cardSelector, fromIndex, toIndex) {
 
 // カード一覧の削除・入力を、毎回の再描画で再登録しなくて済むよう、
 // リストの外枠（container）にイベント委任でまとめて設定する
-function setupListEditor(container, getArray, rerender) {
+// newestFirst を true/false で渡すと「日付順に自動で並ぶ一覧」になる。
+// ドラッグ並び替えはせず、日付欄の入力が終わった（欄から離れた）時点で並べ直す
+function setupListEditor(container, getArray, rerender, newestFirst) {
+  const dateSorted = newestFirst !== undefined;
   container.addEventListener("input", e => {
     const idx = e.target.dataset.idx;
     if (idx === undefined) return;
@@ -457,10 +481,121 @@ function setupListEditor(container, getArray, rerender) {
     rerender();
   });
 
+  if (dateSorted) {
+    container.addEventListener("change", e => {
+      const part = e.target.dataset.datePart;
+      if (!part) return;
+      const field = e.target.closest(".date-field");
+      const start = field.querySelector('[data-date-part="start"]').value;
+      const endInput = field.querySelector('[data-date-part="end"]');
+      pushHistory();
+      const arr = getArray();
+      const item = arr[e.target.dataset.dateIdx];
+      item.date = composeDateText(start, endInput ? endInput.value : "");
+      arr.splice(0, arr.length, ...sortByDate(arr, newestFirst));
+      rerender();
+
+      // 並び直してカードが移動したら、画面をそのカードまで追いかけて目印を付け、
+      // 次の入力欄（タイトル・キャプションなど）にカーソルを置く
+      const newIdx = arr.indexOf(item);
+      const card = container.querySelector(`[data-idx="${newIdx}"]:not(input):not(textarea)`);
+      if (!card) return;
+      if (newIdx !== Number(e.target.dataset.dateIdx)) {
+        card.classList.add("just-added");
+        setTimeout(() => card.classList.remove("just-added"), 1700);
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      // 開始日を選んだら終了日へ（終了日の欄がない一覧では次の入力欄へ）、
+      // 終了日を選んだら次の入力欄へ
+      const endField = card.querySelector('[data-date-part="end"]');
+      const next = card.querySelector('input[type=text][data-field]');
+      const target = part === "start" && endField && !endField.disabled ? endField : next;
+      if (target) target.focus({ preventScroll: true });
+    });
+    return;
+  }
+
   makeSortable(container, "[data-idx]", card => ({
     list: getArray(),
     index: Number(card.dataset.idx),
   }), rerender);
+}
+
+/* ============================================================
+   日付の入力（カレンダーから選ぶ）
+   ------------------------------------------------------------
+   手入力だと「2026/11/3」「11月3日」など書き方がぶれて、並び順や
+   「過ぎた予定を隠す」判定が崩れるため、日付は<input type="date">の
+   カレンダーで選ぶ。保存する形式はこれまでどおりの文字列
+   （"2026.11.03" / 期間なら "2026.11.22–23" など）なので、サイト側や
+   過去のデータはそのまま使える。
+   ============================================================ */
+const pad2 = n => String(n).padStart(2, "0");
+
+// 保存されている日付文字列 → カレンダー用の { start, end }（"YYYY-MM-DD"、無ければ ""）
+function parseDateText(text) {
+  const m = String(text || "").match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})(?:\s*[–—~〜-]\s*(?:(\d{4})[.\/-])?(?:(\d{1,2})[.\/-])?(\d{1,2}))?/);
+  if (!m) return { start: "", end: "" };
+  const start = `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
+  const end = m[6] ? `${m[4] || m[1]}-${pad2(m[5] || m[2])}-${pad2(m[6])}` : "";
+  return { start, end };
+}
+
+// カレンダーで選んだ開始日・終了日 → 保存用の日付文字列
+function composeDateText(start, end) {
+  if (!start) return "";
+  const [sy, sm, sd] = start.split("-");
+  const head = `${sy}.${sm}.${sd}`;
+  if (!end || end <= start) return head;
+  const [ey, em, ed] = end.split("-");
+  if (ey !== sy) return `${head}–${ey}.${em}.${ed}`;
+  if (em !== sm) return `${head}–${em}.${ed}`;
+  return `${head}–${ed}`;
+}
+
+// 日付欄のHTML。allowRange が true なら「終了日（任意）」も出す
+function dateFieldHtml(i, dateText, allowRange, hint) {
+  const { start, end } = parseDateText(dateText);
+  // カレンダーで読み取れない古い書き方が残っていたら、元の表記を見せておく
+  const legacy = dateText && !start ? `<p class="setup-note" style="margin:6px 0 0;">元の表記：「${escapeHtml(dateText)}」（カレンダーで選び直すと置き換わります）</p>` : "";
+  return `
+    <div class="date-field">
+      <div class="${allowRange ? "row2" : ""}">
+        <div>
+          <label>${allowRange ? "日付（開始日）" : "日付"}</label>
+          <input type="date" data-date-part="start" data-date-idx="${i}" value="${start}">
+        </div>
+        ${allowRange ? `
+        <div>
+          <label>終了日（複数日のときだけ）</label>
+          <input type="date" data-date-part="end" data-date-idx="${i}" value="${end}" min="${start}" ${start ? "" : "disabled"}>
+        </div>` : ""}
+      </div>
+      ${hint ? `<p class="setup-note" style="margin:6px 0 0;">${hint}</p>` : ""}
+      ${legacy}
+    </div>
+  `;
+}
+
+// サイト側（script.js）と同じ並べ方。日付欄の書き出しを数値にして比べ、
+// 読み取れないもの（"日程調整中" など）は常に一番上、同じ日付は元の順を保つ
+function dateStartValue(dateText) {
+  const m = String(dateText || "").match(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
+  if (!m) return null;
+  return Number(m[1]) * 10000 + Number(m[2]) * 100 + Number(m[3]);
+}
+function sortByDate(list, newestFirst) {
+  return list
+    .map((item, i) => ({ item, i, v: dateStartValue(item.date) }))
+    .sort((a, b) => {
+      if (a.v === null || b.v === null) {
+        if (a.v === b.v) return a.i - b.i;
+        return a.v === null ? -1 : 1;
+      }
+      if (a.v !== b.v) return newestFirst ? b.v - a.v : a.v - b.v;
+      return a.i - b.i;
+    })
+    .map(x => x.item);
 }
 
 SITE_FIELDS.forEach(key => {
@@ -470,9 +605,10 @@ SITE_FIELDS.forEach(key => {
   });
 });
 
-setupListEditor(el("topicsList"), () => state.topics, renderTopics);
-setupListEditor(el("eventsList"), () => state.events, renderEvents);
-setupListEditor(el("galleryList"), () => state.gallery, renderGallery);
+setupListEditor(el("topicsList"), () => state.topics, renderTopics, true);
+setupListEditor(el("scheduleList"), () => state.schedule, renderSchedule, false);
+setupListEditor(el("eventsList"), () => state.events, renderEvents, true);
+setupListEditor(el("galleryList"), () => state.gallery, renderGallery, true);
 setupSectionsEditor();
 
 wireImageUpload(el("topicsList"), (target, path) => { state.topics[target.dataset.uploadIdx].image = path; }, renderTopics);
@@ -511,14 +647,17 @@ el("orderList").addEventListener("click", e => {
 function blankTopic() {
   return { date: "", title: "", body: "", image: "" };
 }
+function blankSchedule() {
+  return { date: "", time: "", title: "", place: "", body: "", link: "" };
+}
 function blankEvent() {
   return { date: "", title: "", place: "", body: "" };
 }
 function blankPhoto() {
-  return { image: "", color: "#AB511F", caption: "", tilt: 0 };
+  return { date: "", image: "", color: "#AB511F", caption: "", tilt: 0 };
 }
 function blankSection() {
-  return { navLabel: "", title: "", intro: "", items: [] };
+  return { navLabel: "", title: "", intro: "", bg: "cream", items: [] };
 }
 function blankSectionItem() {
   return { title: "", body: "", image: "", link: "" };
@@ -556,14 +695,16 @@ async function loadFromGitHub() {
     state.sha = data.sha;
     state.site = extractObject(content, "SITE");
     state.topics = extractArray(content, "TOPICS");
-    state.events = extractArray(content, "EVENTS");
-    state.gallery = extractArray(content, "GALLERY");
+    state.topics = sortByDate(state.topics, true);
+    state.schedule = sortByDate(extractArray(content, "UPCOMING"), false);
+    state.events = sortByDate(extractArray(content, "EVENTS"), true);
+    state.gallery = sortByDate(extractArray(content, "GALLERY"), true);
     state.sections = extractArray(content, "SECTIONS");
     state.sections.forEach((s, i) => { s._key = i + 1; });
     state.nextSectionKey = state.sections.length + 1;
 
     let rawOrder = extractArray(content, "SECTION_ORDER");
-    if (!rawOrder.length) rawOrder = ["about", "topics", "events", "gallery"];
+    if (!rawOrder.length) rawOrder = ["about", "topics", "schedule", "events", "gallery"];
     state.sectionOrder = migrateSectionOrder(rawOrder);
     state.rawContent = content;
 
@@ -577,6 +718,7 @@ async function loadFromGitHub() {
     el("sitePanel").style.display = "block";
     el("orderPanel").style.display = "block";
     el("topicsPanel").style.display = "block";
+    el("schedulePanel").style.display = "block";
     el("eventsPanel").style.display = "block";
     el("galleryPanel").style.display = "block";
     el("sectionsPanel").style.display = "block";
@@ -616,11 +758,9 @@ function renderSite() {
 
 function renderTopics() {
   el("topicsList").innerHTML = state.topics.map((t, i) => `
-    <div class="event-card" data-idx="${i}">
-      <span class="drag-handle" title="ドラッグで並び替え">⠿⠿</span>
+    <div class="event-card" data-idx="${i}" style="touch-action:auto;">
       <button class="remove-btn" data-remove="${i}">削除</button>
-      <label>日付</label>
-      <input type="text" data-idx="${i}" data-field="date" value="${escapeAttr(t.date)}" placeholder="2026.08.13">
+      ${dateFieldHtml(i, t.date, false, "")}
       <label>タイトル</label>
       <input type="text" data-idx="${i}" data-field="title" value="${escapeAttr(t.title)}" placeholder="お知らせのタイトル">
       <label>本文</label>
@@ -632,21 +772,38 @@ function renderTopics() {
   `).join("");
 }
 
-function renderEvents() {
-  el("eventsList").innerHTML = state.events.map((ev, i) => `
-    <div class="event-card" data-idx="${i}">
-      <span class="drag-handle" title="ドラッグで並び替え">⠿⠿</span>
+function renderSchedule() {
+  el("scheduleList").innerHTML = state.schedule.map((ev, i) => `
+    <div class="event-card" data-idx="${i}" style="touch-action:auto;">
       <button class="remove-btn" data-remove="${i}">削除</button>
+      ${dateFieldHtml(i, ev.date, true, "空欄のままなら「日程未定」と表示されます")}
       <div class="row2">
         <div>
-          <label>日付</label>
-          <input type="text" data-idx="${i}" data-field="date" value="${escapeAttr(ev.date)}" placeholder="2026.11.03">
+          <label>時間（任意）</label>
+          <input type="text" data-idx="${i}" data-field="time" value="${escapeAttr(ev.time)}" placeholder="10:00〜16:00">
         </div>
         <div>
-          <label>場所</label>
-          <input type="text" data-idx="${i}" data-field="place" value="${escapeAttr(ev.place)}" placeholder="としま産業振興プラザ">
+          <label>場所（任意）</label>
+          <input type="text" data-idx="${i}" data-field="place" value="${escapeAttr(ev.place)}" placeholder="東芝未来科学館">
         </div>
       </div>
+      <label>タイトル</label>
+      <input type="text" data-idx="${i}" data-field="title" value="${escapeAttr(ev.title)}" placeholder="イベント名">
+      <label>説明文（任意）</label>
+      <textarea data-idx="${i}" data-field="body" placeholder="対象・内容・参加方法など">${escapeHtml(ev.body)}</textarea>
+      <label>詳細・申込ページのURL（任意）</label>
+      <input type="text" data-idx="${i}" data-field="link" value="${escapeAttr(ev.link)}" placeholder="https://...">
+    </div>
+  `).join("");
+}
+
+function renderEvents() {
+  el("eventsList").innerHTML = state.events.map((ev, i) => `
+    <div class="event-card" data-idx="${i}" style="touch-action:auto;">
+      <button class="remove-btn" data-remove="${i}">削除</button>
+      ${dateFieldHtml(i, ev.date, true, "")}
+      <label>場所</label>
+      <input type="text" data-idx="${i}" data-field="place" value="${escapeAttr(ev.place)}" placeholder="としま産業振興プラザ">
       <label>タイトル</label>
       <input type="text" data-idx="${i}" data-field="title" value="${escapeAttr(ev.title)}" placeholder="イベント名">
       <label>説明文</label>
@@ -657,9 +814,9 @@ function renderEvents() {
 
 function renderGallery() {
   el("galleryList").innerHTML = state.gallery.map((g, i) => `
-    <div class="gallery-card" data-idx="${i}">
-      <span class="drag-handle" title="ドラッグで並び替え">⠿⠿</span>
+    <div class="gallery-card" data-idx="${i}" style="touch-action:auto;">
       <button class="remove-btn" data-remove="${i}">削除</button>
+      ${dateFieldHtml(i, g.date, false, "撮影日（イベントの日）。サイトには表示されず、新しい写真を上に並べるためだけに使います")}
       <label>キャプション</label>
       <input type="text" data-idx="${i}" data-field="caption" value="${escapeAttr(g.caption)}" placeholder="サイエンスショーの様子">
       <label>画像ファイル名（images/フォルダに入れたファイル名。空欄なら色プレースホルダー）</label>
@@ -679,8 +836,18 @@ function renderSections() {
       <input type="text" data-sec="${si}" data-field="title" value="${escapeAttr(s.title)}" placeholder="工作紹介">
       <label>説明文（任意）</label>
       <textarea data-sec="${si}" data-field="intro" placeholder="このセクションの紹介文">${escapeHtml(s.intro)}</textarea>
+      <label>背景色</label>
+      <div class="bg-choice">
+        ${[["cream", "クリーム色", "#FFFBEA"], ["yellow", "黄色", "#FFF6C4"]].map(([val, name, color]) => `
+          <label class="bg-option">
+            <input type="radio" name="bg-${s._key}" data-sec="${si}" data-field="bg" value="${val}" ${sectionBg(s, si) === val ? "checked" : ""}>
+            <span class="bg-swatch" style="background:${color};"></span>${name}
+          </label>
+        `).join("")}
+      </div>
 
       <label style="margin-top:16px;">このセクションの項目</label>
+      <button class="add-btn" data-add-item="${si}">＋ 項目を追加</button>
       <div class="items-editor">
         ${s.items.map((it, ii) => `
           <div class="event-card" data-item-idx="${ii}" data-section-idx-for-item="${si}">
@@ -698,9 +865,15 @@ function renderSections() {
           </div>
         `).join("")}
       </div>
-      <button class="add-btn" data-add-item="${si}">＋ 項目を追加</button>
     </div>
   `).join("");
+}
+
+// サイト側の sectionIsYellow() と同じ決め方で、今の背景色を "cream"/"yellow" で返す
+// （bg 未指定の古いデータは交互＝1つ目が黄色）
+function sectionBg(s, i) {
+  if (s.bg === "yellow" || s.bg === "cream") return s.bg;
+  return i % 2 === 0 ? "yellow" : "cream";
 }
 
 function setupSectionsEditor() {
@@ -736,8 +909,10 @@ function setupSectionsEditor() {
       renderSections();
     } else if (e.target.dataset.addItem !== undefined) {
       pushHistory();
-      state.sections[e.target.dataset.addItem].items.push(blankSectionItem());
+      const si = e.target.dataset.addItem;
+      state.sections[si].items.unshift(blankSectionItem());
       renderSections();
+      focusNewCard(container.querySelector(`[data-section-idx-for-item="${si}"][data-item-idx="0"]`));
     }
   });
 
@@ -856,17 +1031,24 @@ function wireImageUpload(container, setImagePath, rerender) {
   });
 }
 
-// state.site/topics/events/gallery の今の内容を反映した script.js 全文を組み立てる
+// state.site/topics/schedule/events/gallery の今の内容を反映した script.js 全文を組み立てる
 // （保存とプレビューの両方から使う）
 function buildUpdatedScriptContent() {
   const newSiteBlock = "var SITE = " + JSON.stringify(state.site, null, 2) + ";";
   const newTopicsBlock = "var TOPICS = " + JSON.stringify(state.topics, null, 2) + ";";
+  const newScheduleBlock = "var UPCOMING = " + JSON.stringify(state.schedule, null, 2) + ";";
   const newEventsBlock = "var EVENTS = " + JSON.stringify(state.events, null, 2) + ";";
   const newGalleryBlock = "var GALLERY = " + JSON.stringify(state.gallery, null, 2) + ";";
   const newSectionsBlock = "var SECTIONS = " + JSON.stringify(sectionsWithComputedIds(), null, 2) + ";";
   const newOrderBlock = "var SECTION_ORDER = " + JSON.stringify(serializableSectionOrder(), null, 2) + ";";
 
-  return state.rawContent
+  // 活動予定（UPCOMING）がまだないscript.jsなら、EVENTSの直前に足す
+  const upcomingRe = /(?:const|var|let) UPCOMING = \[[\s\S]*?\];/;
+  const base = upcomingRe.test(state.rawContent)
+    ? state.rawContent.replace(upcomingRe, () => newScheduleBlock)
+    : state.rawContent.replace(/(?:const|var|let) EVENTS = /, m => newScheduleBlock + "\n\n" + m);
+
+  return base
     .replace(/(?:const|var|let) SITE = \{[\s\S]*?\};/, newSiteBlock)
     .replace(/(?:const|var|let) TOPICS = \[[\s\S]*?\];/, newTopicsBlock)
     .replace(/(?:const|var|let) EVENTS = \[[\s\S]*?\];/, newEventsBlock)
@@ -921,6 +1103,7 @@ async function showPreview() {
     // サイト本体と同じグローバル変数を、今の編集内容で上書きする
     win.SITE = state.site;
     win.TOPICS = state.topics;
+    win.UPCOMING = state.schedule;
     win.EVENTS = state.events;
     win.GALLERY = state.gallery;
     win.SECTIONS = sectionsWithComputedIds();
@@ -932,6 +1115,7 @@ async function showPreview() {
     // 順番。サイト本体側のinit処理と同じ順にすること）
     win.renderSite();
     win.renderTopics();
+    if (typeof win.renderSchedule === "function") win.renderSchedule();
     win.renderEvents();
     win.renderGallery();
     win.renderSections();

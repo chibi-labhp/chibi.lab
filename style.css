@@ -387,6 +387,28 @@ a { color: inherit; }
   color: var(--magenta);
 }
 
+/* ============ 活動予定 ============ */
+.schedule-entry { border-left: 6px solid var(--teal); }
+
+.schedule-time {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.schedule-entry .schedule-link { display: block; }
+
+.schedule-empty {
+  margin: 0;
+  padding: 20px clamp(16px, 3vw, 28px);
+  background: var(--paper);
+  border: 1.5px dashed var(--ink-soft);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
 .topic-image {
   display: block;
   margin-top: 12px;
