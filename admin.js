@@ -188,7 +188,8 @@ function saveDraft() {
   if (snap === lastDraftSnapshot) return;
   lastDraftSnapshot = snap;
   try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ repo: state.repo, savedAt: Date.now(), snapshot: snap }));
+    // baseSha: この下書きが「どの時点のscript.js」を元に編集されたものか
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ repo: state.repo, baseSha: state.sha, savedAt: Date.now(), snapshot: snap }));
   } catch (e) { /* 容量オーバー等で保存できなくても致命的ではないので無視する */ }
 }
 
@@ -209,6 +210,15 @@ function maybeRestoreDraft() {
   try { draft = JSON.parse(raw); } catch (e) { return; }
   if (!draft || draft.repo !== state.repo || !draft.snapshot) return;
   if (draft.snapshot === snapshotState()) return; // 今読み込んだ内容と同じなら何もしない
+
+  // 下書きを取ったあとにGitHub側のscript.jsが（別の人の保存などで）変わっていたら、
+  // その下書きは古い内容をもとにしているので復元しない。復元すると、その後に
+  // 追加された写真やお知らせを古い状態で上書きして消してしまうため
+  if (!draft.baseSha || draft.baseSha !== state.sha) {
+    clearDraft();
+    alert("前回保存しなかった編集内容がありましたが、そのあとサイトの内容が更新されているため破棄しました。\n（復元すると、新しく追加された内容が消えてしまうためです）");
+    return;
+  }
 
   const when = draft.savedAt ? new Date(draft.savedAt).toLocaleString("ja-JP") : "";
   const ok = confirm(
@@ -1177,7 +1187,7 @@ async function saveToGitHub() {
     clearDraft();
 
     const pagesUrl = pagesUrlFromRepo(state.repo);
-    status.innerHTML = "保存しました ✓（数分でサイトに反映されます）" +
+    status.innerHTML = "保存しました ✓（1〜2分でサイトに反映されます。すぐに変わらなくても、もう一度保存せずに少し待ってから再読み込みしてください）" +
       (pagesUrl ? ` <a href="${escapeAttr(pagesUrl)}" target="_blank" rel="noopener">公開サイトを見る →</a>` : "");
     status.className = "status ok";
   } catch (e) {

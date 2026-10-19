@@ -186,6 +186,17 @@
   <p>&copy; <span id="year"></span> 東京理科大学 サイエンスコミュニケーションサークル chibi lab.</p>
 </footer>
 
-<script src="script.js?v=20261019"></script>
+<!-- script.js は編集ページから保存されるたびに中身が変わるので、1分ごとに変わる
+     番号を付けて読み込む（GitHub Pagesの最大10分のキャッシュで、保存した内容が
+     なかなか表示されない問題を防ぐため） -->
+<script>
+  (function () {
+    var s = document.createElement("script");
+    s.src = "script.js?t=" + Math.floor(Date.now() / 60000);
+    s.async = false;
+    document.body.appendChild(s);
+  })();
+</script>
+<noscript><p style="text-align:center;padding:16px;">このサイトの表示にはJavaScriptを有効にしてください。</p></noscript>
 </body>
 </html>
